@@ -1,19 +1,12 @@
 'use strict'
 
-// .env library access
 require('dotenv').config();
 
-//express server library
 const express = require('express');
-
-// initializing the express library
 const app = express();
-
 const cors = require('cors');
 const { response } = require('express');
-
-// Anyone can make a request to our server
-app.use(cors())
+app.use(cors());
 
 const PORT = process.env.PORT || 3002;
 
@@ -29,31 +22,30 @@ app.get('/list', (req, res) => {
     res.send(lists);
 })
 
-// sends back list based on query parameter 'type'
-app.get('/listType', (req, res, next) => {
+app.get('/weather', getWeather);
+
+async function getWeather (req, res, next) {
     try {
-        console.log(req.query);
-        let type = req.query.type;
-        let myList = new List(type);
-        let formattedList = myList.getItems();
-        res.status(200).send(formattedList);
+        let city = req.query.city;
+        let cityForecast = new Forecast(city);
+        let formattedForecast = cityForecast.getWeather();
+        res.status(200).send(formattedForecast);
     }
     catch (error) {
         next(error)
     }
-})
+}
 
-class List {
-    constructor(type) {
-        let newList = lists.lists.find(list => list.listName === type);
-        // Deconstructing
-        // let {items} = lists.lists.find(list => list.listName === type);
-        this.items = newList.items;
+class Forecast {
+    constructor(city) {
+        let cityForecast = lists.find(element => element.city_name === city);
+
+        this.weather = cityForecast;
     }
 
-    getItems() {
-        return this.items.map(item => {
-            return { name: item.name, description: item.description }
+    getWeather() {
+        return this.weather.data.map(element => {
+            return { date: element.valid_date, description: element.weather.description }
         })
     }
 }
