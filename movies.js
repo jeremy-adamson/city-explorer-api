@@ -4,7 +4,9 @@ const axios = require('axios');
 const cache = require('./cache');
 
 function getMovies(req, res, next) {
-    const url = `https://api.themoviedb.org/3/movie/550?api_key=${MOVIE_API_KEY}`;
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${req.query.city}`;
+
+    console.log(url);
 
     const key = 'movies ' + req.query.city;
     if (cache[key] && (Date.now() - cache[key].timestamp) < 1800000) {
@@ -13,7 +15,7 @@ function getMovies(req, res, next) {
     else {
         axios.get(url)
             .then(data => {
-                let formattedMovieData = data.map(element => new MovieInfo(element));
+                let formattedMovieData = data.data.results.map(element => new MovieInfo(element));
                 cache[key] = {};
                 cache[key].timestamp = Date.now();
                 cache[key].data = formattedMovieData;
@@ -27,8 +29,8 @@ class MovieInfo {
     constructor(data){
         this.title = data.title;
         this.overview = data.overview;
-        this.poster_url = data.url;
-        this.released = data.released;
+        this.poster_url = 'https://image.tmdb.org/t/p/w500' + data.poster_path;
+        this.released = data.release_date;
     }
 }
 
