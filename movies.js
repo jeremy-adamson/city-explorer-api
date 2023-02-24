@@ -6,7 +6,7 @@ const cache = require('./cache');
 function getMovies(req, res, next) {
     const url = `https://api.themoviedb.org/3/movie/550?api_key=${MOVIE_API_KEY}`;
 
-    const key = 'movies ' + city;
+    const key = 'movies ' + req.query.city;
     if (cache[key] && (Date.now() - cache[key].timestamp) < 1800000) {
         res.status(200).send(cache[key].data);
     }

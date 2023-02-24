@@ -5,10 +5,14 @@ const { response } = require('express');
 const cache = require('./cache');
 
 function getWeather(req, res, next) {
+    
+    console.log(req.query.lat);
     const url1 = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${process.env.ACCUWEATHER_KEY}&q=${req.query.lat},${req.query.lon}`;
     const url2base = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/`;
 
     let url2 = '';
+
+    
 
     const key = 'weather ' + req.query.city;
 
